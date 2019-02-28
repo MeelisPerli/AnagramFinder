@@ -20,8 +20,6 @@ public class main {
 
         long stop = System.currentTimeMillis() - startTime;
         System.out.println(stop + result);
-
-
     }
 
     //loads data as bytes, creates threads and gathers results.
@@ -34,7 +32,7 @@ public class main {
         StringBuilder res = new StringBuilder();
 
         for (int i = 0; i < numberOfThreads; i++) {
-            anagramSolver t = new anagramSolver(fileBytes, points.get(i), points.get(i+1));
+            anagramSolver t = new anagramSolver(fileBytes, points.get(i), points.get(i + 1));
             t.start();
             threads.add(t);
         }
@@ -47,19 +45,20 @@ public class main {
         return res.toString();
 
     }
+
     // finds where a line should end and splits there instead of mid line
     private static List<Integer> getChunkEndPoints(int chunks, int maxlen, byte[] bytes) {
         List<Integer> chunkPoints = new ArrayList<>();
-        int chunkSize = maxlen/chunks;
-        for (int i = 0; i < maxlen; i+= chunkSize) {
+        int chunkSize = maxlen / chunks;
+        for (int i = 0; i < maxlen; i += chunkSize) {
             int k = i;
-            while(bytes[k] != 10){
+            while (bytes[k] != 10) {
                 k++;
             }
             chunkPoints.add(k);
         }
         chunkPoints.set(0, 0);
-        if (chunkPoints.size() != chunks + 1){
+        if (chunkPoints.size() != chunks + 1) {
             chunkPoints.add(maxlen);
         }
         return chunkPoints;
