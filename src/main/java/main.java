@@ -13,8 +13,6 @@ public class main {
     static int inputlen;
 
     public static void main(String[] argv) throws IOException, InterruptedException {
-
-
         long startTime = System.currentTimeMillis();
 
         //This is where the magic happens
