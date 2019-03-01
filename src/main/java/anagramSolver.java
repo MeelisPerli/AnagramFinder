@@ -1,14 +1,18 @@
+import java.util.HashMap;
+
 public class anagramSolver extends Thread {
 
     private byte[] bytes;
     private int start;
     private int end;
     private String res;
+    private HashMap<Byte, Integer> charToNumMap;
 
-    public anagramSolver(byte[] bytes, int start, int end) {
+    public anagramSolver(byte[] bytes, int start, int end, HashMap<Byte, Integer> charToNumMap) {
         this.bytes = bytes;
         this.start = start;
         this.end = end;
+        this.charToNumMap = charToNumMap;
     }
 
 
@@ -34,7 +38,7 @@ public class anagramSolver extends Thread {
             }
 
             //skip word
-            currentVal *= main.byteToNum(b);
+            currentVal *= charToNumMap.get(b);
             line[count] = (char) b;
             count++;
             if (currentVal == 0) {
@@ -53,7 +57,12 @@ public class anagramSolver extends Thread {
                 currentVal = 1;
             }
         }
+
         res = anagrams.toString();
+    }
+
+    public void runOnMain() {
+        run();
     }
 
     public String getResult() {

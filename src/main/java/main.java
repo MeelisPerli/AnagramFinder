@@ -13,7 +13,10 @@ public class main {
     static int inputlen;
 
     public static void main(String[] argv) throws IOException, InterruptedException {
+
+
         long startTime = System.currentTimeMillis();
+
         //This is where the magic happens
         initWordMap(argv[1]);
         String result = getAnagrams(argv[0]);
@@ -26,22 +29,24 @@ public class main {
     private static String getAnagrams(String dictPath) throws IOException, InterruptedException {
         byte[] fileBytes = Files.readAllBytes(new File(dictPath).toPath());
         int len = fileBytes.length;
-        int numberOfThreads = 3;
-        List<Integer> points = getChunkEndPoints(numberOfThreads, len, fileBytes);
+        int numberOfExtraThreads = 3;
+        List<Integer> points = getChunkEndPoints(numberOfExtraThreads + 1, len, fileBytes);
         List<anagramSolver> threads = new ArrayList<>();
         StringBuilder res = new StringBuilder();
 
-        for (int i = 0; i < numberOfThreads; i++) {
-            anagramSolver t = new anagramSolver(fileBytes, points.get(i), points.get(i + 1));
+        for (int i = 0; i < numberOfExtraThreads; i++) {
+            anagramSolver t = new anagramSolver(fileBytes, points.get(i + 1), points.get(i + 2), charToNumMap);
             t.start();
             threads.add(t);
         }
-        for (int i = 0; i < numberOfThreads; i++) {
+        anagramSolver a = new anagramSolver(fileBytes, points.get(0), points.get(1), charToNumMap);
+        a.runOnMain();
+        res.append(a.getResult());
+        for (int i = 0; i < numberOfExtraThreads; i++) {
             anagramSolver t = threads.get(i);
             t.join();
             res.append(t.getResult());
         }
-
         return res.toString();
 
     }
@@ -77,21 +82,19 @@ public class main {
                 amountInList++;
             }
         }
+        for (int i = 0; i < 255; i++) {
+            byte b = (byte) i;
+            if (!charToNumMap.containsKey(b))
+                charToNumMap.put(b, 0);
+        }
         inputlen = inputword.length();
         inputVal = wordToNum(inputword);
-
     }
 
     private static int wordToNum(String word) {
         int s = 1;
         for (byte c : word.getBytes())
-            s *= byteToNum(c);
+            s *= charToNumMap.get(c);
         return s;
-    }
-
-    public static int byteToNum(byte b) {
-        if (charToNumMap.containsKey(b))
-            return charToNumMap.get(b);
-        return 0;
     }
 }
